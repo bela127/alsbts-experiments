@@ -1,5 +1,6 @@
 clear all
 Ts=1e-3; fc=1/Ts;
+log_time = 0.2;
 Vdc=650;
 Vref=325;fref_st=50;
 Iref=2;

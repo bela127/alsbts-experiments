@@ -1,4 +1,28 @@
 [[package]]
+name = "alsbts-core"
+version = "0.4.0"
+description = "stream based active learning"
+category = "main"
+optional = false
+python-versions = ">=3.8,<3.10"
+develop = true
+
+[package.dependencies]
+alts-core = {path = "/home/bela/Cloud/code/Git/alts-core", develop = true}
+coloredlogs = "^15.0.1"
+ipython = "^8.0.1"
+libclang = "<12.0"
+matplotlib = "^3.5.1"
+nptyping = ">=2.0.0a1"
+numpy = "^1.22.3"
+scikit-learn = "^1.0.2"
+scipy = "1.8"
+
+[package.source]
+type = "directory"
+url = "../alsbts-core"
+
+[[package]]
 name = "alts-core"
 version = "1.0.2"
 description = "Core modules of the active learning testing suite"
@@ -55,6 +79,7 @@ python-versions = ">=3.8,<3.10"
 develop = true
 
 [package.dependencies]
+alts-core = {path = "/home/bela/Cloud/code/Git/alts-core", develop = true}
 filterpy = "^1.4.5"
 keras = "^2.9.0"
 matplotlib = "^3.5.1"
@@ -99,17 +124,17 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "attrs"
-version = "21.4.0"
+version = "22.1.0"
 description = "Classes Without Boilerplate"
 category = "dev"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+python-versions = ">=3.5"
 
 [package.extras]
-dev = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins", "zope.interface", "furo", "sphinx", "sphinx-notfound-page", "pre-commit", "cloudpickle"]
+dev = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "mypy (>=0.900,!=0.940)", "pytest-mypy-plugins", "zope.interface", "furo", "sphinx", "sphinx-notfound-page", "pre-commit", "cloudpickle"]
 docs = ["furo", "sphinx", "zope.interface", "sphinx-notfound-page"]
-tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins", "zope.interface", "cloudpickle"]
-tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins", "cloudpickle"]
+tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "mypy (>=0.900,!=0.940)", "pytest-mypy-plugins", "zope.interface", "cloudpickle"]
+tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "mypy (>=0.900,!=0.940)", "pytest-mypy-plugins", "cloudpickle"]
 
 [[package]]
 name = "backcall"
@@ -193,7 +218,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "executing"
-version = "0.8.3"
+version = "0.9.1"
 description = "Get the currently executing AST node of a frame, and other information"
 category = "main"
 optional = false
@@ -347,6 +372,19 @@ description = "Clang Python Bindings, mirrored from the official LLVM repo: http
 category = "main"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "matlab"
+version = "1.0.0"
+description = "pyproject pakage for matlab engin"
+category = "main"
+optional = false
+python-versions = ">=3.8,<3.10"
+develop = true
+
+[package.source]
+type = "directory"
+url = "../../../../MATLAB/R2021b/extern/engines/python/build/lib"
 
 [[package]]
 name = "matplotlib"
@@ -761,9 +799,10 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.10"
-content-hash = "f43af7ab0528fb42a837024ef68272a9950f81f9b712a6626bda5923dd4f789e"
+content-hash = "905b49fce809196ef180372ce0f5c7265f6f0e36b39e073f7064c26e1c6c04a2"
 
 [metadata.files]
+alsbts-core = []
 alts-core = []
 alts-modules = []
 alvsts-modules = []
@@ -790,6 +829,7 @@ joblib = []
 keras = []
 kiwisolver = []
 libclang = []
+matlab = []
 matplotlib = []
 matplotlib-inline = []
 mccabe = []
