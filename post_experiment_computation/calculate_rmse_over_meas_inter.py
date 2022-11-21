@@ -15,6 +15,7 @@ def rmse_worker(dirpath, file):
 
     rmse = calc_rmse(sim_res)
     nr_measurements = calc_measurements(sim_res)
+    print(rmse, nr_measurements)
     return rmse, nr_measurements
 
 
@@ -22,6 +23,9 @@ def dir_worker(dirpath, dir: str):
     if dir.startswith("fixed_interval_t"):
         measure_time_str = dir.lstrip("fixed_interval_t")
         measure_time = float(measure_time_str)
+
+        print(measure_time)
+
 
         rmse_meas = [rmse_meas for rmse_meas in walk_files(path=os.path.join(dirpath, dir), worker=rmse_worker)]
         rmse , meas = np.asarray(rmse_meas).T

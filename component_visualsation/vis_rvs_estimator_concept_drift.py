@@ -7,14 +7,14 @@ from alvsts.modules.rvs_estimator import NoisyGaussianRVSEstimator
 
 from utils import generate_data
 
-rvs_est = NoisyGaussianRVSEstimator(noise_var=0.0,length_scale=0.3,probability_of_function_change=0.005,change_size_proportion=0.25)()
+rvs_est = NoisyGaussianRVSEstimator(noise_var=0.0,length_scale=0.2,probability_of_function_change=0.02,change_size_proportion=0.50)()
 opt_cd = OptimalChangeDetector()()
 
 
 vs_gts = []
 rvss = []
 times = []
-for data in generate_data(rvs_est, opt_cd, time=600):
+for data in generate_data(rvs_est, opt_cd, time=1200):
     vs_gt, timeOutput, voltageOutput, knewVOutput, activePowerOutput, reactivePowerOutput, rvs, change = data
     vs_gts.append(vs_gt)
     rvss.append(rvs)
@@ -30,14 +30,15 @@ for change_time in change_times:
     m1 = time >= last_time
     m2 = time < change_time
     mask = m1 & m2
-    last_time = change_time
+    
 
     vs_gts_profile = vs_gts[mask]
     rvss_profile = rvss[mask]
 
     index = vs_gts_profile.argsort()
 
-    plot.plot(vs_gts_profile[index], rvss_profile[index])
+    plot.plot(vs_gts_profile[index], rvss_profile[index], label=f"mapping at t={last_time}")
+    last_time = change_time
 
 mask = time >= last_time
 
@@ -46,7 +47,11 @@ rvss_profile = rvss[mask]
 
 index = vs_gts_profile.argsort()
 
-plot.plot(vs_gts_profile[index], rvss_profile[index])
+plot.plot(vs_gts_profile[index], rvss_profile[index], label=f"mapping at t={last_time}")
 
+plot.title("Evolvement of rVS mapping over time")
+plot.xlabel("GT VS")
+plot.ylabel("rVS")
+
+plot.legend()
 plot.show()
-input()

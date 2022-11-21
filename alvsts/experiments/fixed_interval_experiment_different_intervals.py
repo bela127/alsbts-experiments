@@ -18,12 +18,12 @@ from alvsts.modules.consumer_behavior import RandomTimeUniformKpBehavior
 from alvsts.modules.estimator import PassThroughEstimator
 from alsbts.core.experiment_modules import StreamExperiment
 from alvsts.modules.evaluator import PlotVSEvaluator, LogAllEvaluator
-from alvsts.modules.rvs_estimator import NoisyGaussianRVSEstimator
-from alvsts.modules.change_detector import NoisyChangeDetector
+from alvsts.modules.rvs_estimator import NoisyGaussianRVSEstimator, OptimalRVSEstimator
+from alvsts.modules.change_detector import NoisyChangeDetector, OptimalChangeDetector
 
 blueprints = []
 with MatLabEngin() as eng:
-    for t in np.arange(2.5, 30, 2):
+    for t in np.arange(2.1, 2.2, 2):
 
         bp = Blueprint(
             repeat=10,
@@ -33,8 +33,8 @@ with MatLabEngin() as eng:
                     exp_setup=ExperimentSetup(
                         eng=eng,
                         consumer_behavior=RandomTimeUniformKpBehavior(),
-                        rvs_estimator = NoisyGaussianRVSEstimator(),
-                        change_detector = NoisyChangeDetector()
+                        rvs_estimator = OptimalRVSEstimator(),
+                        change_detector = OptimalChangeDetector()
                         )
                     ),
                 augmentation= NoAugmentation()

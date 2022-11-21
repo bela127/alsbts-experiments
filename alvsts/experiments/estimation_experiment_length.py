@@ -1,7 +1,7 @@
 import numpy as np
 from alts.modules.queried_data_pool import FlatQueriedDataPool
 from alts.core.oracle.oracle import Oracle
-from alts.modules.query.query_sampler import FixedQuerySampler, AllQuerySampler
+from alts.modules.query.query_sampler import FixedQuerySampler, OptimalQuerySampler, AllQuerySampler
 from alts.core.oracle.augmentation import NoAugmentation
 from alts.core.blueprint import Blueprint
 from alts.modules.query.query_optimizer import MaxMCQueryOptimizer
@@ -12,18 +12,19 @@ from alvsts.modules.data_source import VSSimulationDataSource
 
 from alvsts.modules.experiment_setup import ExperimentSetup
 from alvsts.modules.stopping_criteria import SimEndStoppingCriteria
-from alvsts.modules.selection_criteria import ChangeSelectionCriteria
+from alvsts.modules.selection_criteria import PreTrainIntervalSelectionCriteria
 from alvsts.modules.matlab_engin import MatLabEngin
 from alvsts.modules.consumer_behavior import RandomTimeUniformKpBehavior
-from alvsts.modules.estimator import PassThroughEstimator
+from alvsts.modules.estimator import GPEstimator
 from alsbts.core.experiment_modules import StreamExperiment
 from alvsts.modules.evaluator import PlotVSEvaluator, LogAllEvaluator
-from alvsts.modules.rvs_estimator import OptimalRVSEstimator
-from alvsts.modules.change_detector import NoisyChangeDetector
+from alvsts.modules.rvs_estimator import NoisyGaussianRVSEstimator
+from alvsts.modules.change_detector import NoisyChangeDetector, OptimalChangeDetector
+
 
 blueprints = []
 with MatLabEngin() as eng:
-    for miss in np.arange(0, 0.50, 0.05):
+    for length in np.arange(0.1, 2.1, 0.1):
 
         bp = Blueprint(
             repeat=10,
@@ -33,12 +34,14 @@ with MatLabEngin() as eng:
                     exp_setup=ExperimentSetup(
                         eng=eng,
                         consumer_behavior=RandomTimeUniformKpBehavior(),
-                        rvs_estimator = OptimalRVSEstimator(),
-                        change_detector = NoisyChangeDetector(
-                            change_offset_std=3,
-                            wrong_detection_ratio=0.01,
-                            missed_detection_ratio=miss,
-                            )
+                        rvs_estimator = NoisyGaussianRVSEstimator(
+                            noise_var=0.001, #0.2,
+                            length_scale=length,
+                            probability_of_function_change=-1,#0.02,
+                            change_size_proportion=0,#0.50,
+                            ),
+                        change_detector = OptimalChangeDetector(),
+                        sim_stop_time=900
                         )
                     ),
                 augmentation= NoAugmentation()
@@ -46,17 +49,17 @@ with MatLabEngin() as eng:
             queried_data_pool=FlatQueriedDataPool(),
             initial_query_sampler=FixedQuerySampler(fixed_query = np.asarray([0, 1])),
             query_optimizer=MaxMCQueryOptimizer(
-                selection_criteria=ChangeSelectionCriteria(),
+                selection_criteria=PreTrainIntervalSelectionCriteria(),
                 num_queries=1,
                 query_sampler=AllQuerySampler(),
                 num_tries=2,
             ),
             experiment_modules=StreamExperiment(
-                estimator=PassThroughEstimator()
+                estimator=GPEstimator(length_scale = 0.4)
             ),
             evaluators=[PrintExpTimeEvaluator(),PlotVSEvaluator(),LogAllEvaluator()],
-            exp_name=f"missed_detection{miss}",
-            exp_path="./eval/missed_detection",
+            exp_name=f"estimation_length{length}",
+            exp_path="./eval/estimation_length",
         )
         blueprints.append(bp)
 

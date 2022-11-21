@@ -1,5 +1,7 @@
 clear all
+KpOutput=[1.0];
 Ts=1e-3; fc=1/Ts;
+stop_time = 600;
 log_time = 0.2;
 Vdc=650;
 Vref=325;fref_st=50;
