@@ -139,6 +139,7 @@ src/settings/
 experiment_results
 log*
 eval
+*.svg
 
 ## Matlab
 slprj/
