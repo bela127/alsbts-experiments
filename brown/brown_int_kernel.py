@@ -6,7 +6,7 @@ from mpl_toolkits.mplot3d import Axes3D
 std = 0.1
 stop_time = 25
 
-nr_plot_points = 1000
+nr_plot_points = 10000
 number_of_train_points = 100
 
 n_samples = 5 #Number of function realizations
@@ -197,8 +197,8 @@ def plot_integral(gp: GPy.models.GPRegression):
     plt.ylabel('y')
 
 res = (y_train* (t_train_up - t_train_low))[:,None]
-k = IntegralBrown(variance=1) + GPy.kern.Bias(input_dim=1, active_dims=0)
-m = GPy.models.GPRegression(train, res, k, noise_var=0.01)
+k = IntegralBrown(variance=1) #+ GPy.kern.Bias(input_dim=1, active_dims=0)
+m = GPy.models.GPRegression(train, res, k, noise_var=0.0)
 #train [100,2] ; 
 
 print(m)
@@ -209,7 +209,7 @@ m.Gaussian_noise.variance.fix()
 print(m)
 
 
-m.optimize_restarts(num_restarts=5, max_iters=1000, messages=True, ipython_notebook=False)
+m.optimize_restarts(num_restarts=3, max_iters=1000, messages=True, ipython_notebook=False)
 plot_integral(m)
 plt.show()
 

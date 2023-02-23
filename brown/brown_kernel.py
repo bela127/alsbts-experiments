@@ -6,10 +6,8 @@ from mpl_toolkits.mplot3d import Axes3D
 std = 0.1
 stop_time = 25
 
-nr_plot_points = 1000
+nr_plot_points = 10000
 number_of_train_points = 100
-
-n_samples = 5 #Number of function realizations
 
 rng = np.random.RandomState(None)
 
@@ -26,11 +24,6 @@ train = np.concatenate((t_train_low[:,None], t_train_up[:,None]), axis=1)
 
 
 import numpy as np
-from GPy.kern import Kern
-from GPy.core.parameterization import Param
-from paramz.transformations import Logexp
-import math
-
 
 
 def plot_integral(gp: GPy.models.GPRegression, title='Estimated Model'):
@@ -50,9 +43,9 @@ def plot_integral(gp: GPy.models.GPRegression, title='Estimated Model'):
     plt.legend()
 
 
-k = GPy.kern.Brownian(variance=0.1) + GPy.kern.Bias(input_dim=1, variance=0.1)
+k = GPy.kern.Brownian(variance=0.1) #+ GPy.kern.Bias(input_dim=1, variance=0.1)
 x_train = ((train[:,1]+train[:,0])/2)[:,None]
-m = GPy.models.GPRegression(x_train, y_train[:,None], k, noise_var=0.001)
+m = GPy.models.GPRegression(x_train, y_train[:,None], k, noise_var=0.0)
 m.Gaussian_noise.variance.fix()
 print(m)
 plot_integral(m, "Uncalibrated Model")
