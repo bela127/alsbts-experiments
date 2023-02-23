@@ -141,5 +141,8 @@ log*
 eval
 *.svg
 
+## Profiling
+austin/
+
 ## Matlab
 slprj/
