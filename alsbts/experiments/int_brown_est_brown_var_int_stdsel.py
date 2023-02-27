@@ -27,7 +27,7 @@ from alsbts.modules.selection_criteria import STDSelectionCriteria
 
 blueprints = []
 for i in np.arange(0, 5, 1):
-    for s in np.logspace(-3,-1, 20):
+    for var in np.logspace(-3,-1, 20):
 
         bp = SbBlueprint(
             repeat=10,
@@ -37,7 +37,7 @@ for i in np.arange(0, 5, 1):
             experiment_modules=StreamExperiment(
             query_selector=StreamQuerySelector(
                 query_optimizer=NoQueryOptimizer(
-                    selection_criteria= STDSelectionCriteria(std_threshold=s),
+                    selection_criteria= STDSelectionCriteria(std_threshold=var),
                     query_sampler=StreamQuerySampler(),
                 ),
                 query_decider=ThresholdQueryDecider(threshold=0.0),
@@ -45,7 +45,7 @@ for i in np.arange(0, 5, 1):
                 estimator=BrownGPEstimator(length_scale = 0.1),
             ),
 
-            exp_name=f"int_brown_est_brown_var_int{i}_stdsel{s}",
+            exp_name=f"int_brown_est_brown_var_int{i}_stdsel{var}",
             exp_path=f"./eval/int_brown_est_brown_var_int_stdsel",
         )
         blueprints.append(bp)

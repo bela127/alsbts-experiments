@@ -23,7 +23,7 @@ from alts.modules.data_process.process import DataSourceProcess
 
 
 blueprints = []
-for std in np.arange(0.0001, 0.01, 0.0005):
+for var in np.logspace(-3,-1, 20):
 
     bp = SbBlueprint(
         repeat=10,
@@ -31,14 +31,14 @@ for std in np.arange(0.0001, 0.01, 0.0005):
         experiment_modules=StreamExperiment(
             query_selector=StreamQuerySelector(
                 query_optimizer=NoQueryOptimizer(
-                    selection_criteria= STDSelectionCriteria(std_threshold=std),
+                    selection_criteria= STDSelectionCriteria(std_threshold=var),
                     query_sampler=StreamQuerySampler(),
                 ),
                 query_decider=ThresholdQueryDecider(threshold=0.0),
                 ),
             estimator=GPEstimator(length_scale = 0.4),
         ),
-        exp_name=f"rbf_exp_var_stdsel{std}",
+        exp_name=f"rbf_exp_var_stdsel{var}",
         exp_path="./eval/rbf_exp_var_stdsel",
     )
     blueprints.append(bp)
