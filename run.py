@@ -1,4 +1,4 @@
-experiment_folder = "./alts/experiments"
+experiment_folder = "./alsbts/experiments"
 
 #import coloredlogs, logging
 #logger = logging.getLogger(__name__)
