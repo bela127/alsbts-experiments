@@ -31,14 +31,14 @@ for std in np.logspace(-2.2,0.2, 20):#-2.2,-0.4, 15
         experiment_modules=StreamExperiment(
             query_selector=StreamQuerySelector(
                 query_optimizer=NoQueryOptimizer(
-                    selection_criteria= STDSelectionCriteria(std_threshold=std),
+                    selection_criteria= STDSelectionCriteria(std_threshold=var),
                     query_sampler=StreamQuerySampler(),
                 ),
                 query_decider=ThresholdQueryDecider(threshold=0.0),
                 ),
             estimator=BrownGPEstimator(),
         ),
-        exp_name=f"brown_exp_var_stdsel{std}",
+        exp_name=f"brown_exp_var_stdsel{var}",
         exp_path="./eval/brown_exp_var_stdsel",
     )
     blueprints.append(bp)

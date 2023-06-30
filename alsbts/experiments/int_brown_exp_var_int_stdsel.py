@@ -37,7 +37,7 @@ for i in np.arange(0, 5, 1):
             experiment_modules=StreamExperiment(
             query_selector=StreamQuerySelector(
                 query_optimizer=NoQueryOptimizer(
-                    selection_criteria= STDSelectionCriteria(std_threshold=s),
+                    selection_criteria= STDSelectionCriteria(std_threshold=var),
                     query_sampler=StreamQuerySampler(),
                 ),
                 query_decider=ThresholdQueryDecider(threshold=0.0),

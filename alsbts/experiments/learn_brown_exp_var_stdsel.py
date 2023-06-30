@@ -29,14 +29,14 @@ for std in np.logspace(-2.5,-1, 15):
         experiment_modules=StreamExperiment(
             query_selector=StreamQuerySelector(
                 query_optimizer=NoQueryOptimizer(
-                    selection_criteria= STDSelectionCriteria(std_threshold=std),
+                    selection_criteria= STDSelectionCriteria(std_threshold=var),
                     query_sampler=StreamQuerySampler(),
                 ),
                 query_decider=ThresholdQueryDecider(threshold=0.0),
                 ),
             estimator=BrownGPAdaptEstimator(length_scale = 0.4),
         ),
-        exp_name=f"learn_brown_exp_var_stdsel{std}",
+        exp_name=f"learn_brown_exp_var_stdsel{var}",
         exp_path="./eval/learn_brown_exp_var_stdsel",
     )
     blueprints.append(bp)
