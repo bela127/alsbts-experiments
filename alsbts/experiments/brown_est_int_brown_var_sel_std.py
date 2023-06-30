@@ -19,15 +19,15 @@ from alsbts.modules.selection_criteria import STDSelectionCriteria
 
 from alts.modules.oracle.data_source import BrownianDriftDataSource
 from alts.modules.data_process.process import DataSourceProcess, IntegratingDSProcess
-
+from alts.modules.data_process.time_source import IterationTimeSource
 
 
 blueprints = []
-for std in np.arange(0.03, 0.3, 0.03):
+for std in np.logspace(-2.2,0.2, 20):
 
     bp = SbBlueprint(
-        repeat=10,
-
+        repeat=50,
+        time_source = IterationTimeSource(time_step=0.2),
         experiment_modules=StreamExperiment(
             query_selector=StreamQuerySelector(
                 query_optimizer=NoQueryOptimizer(
@@ -36,7 +36,7 @@ for std in np.arange(0.03, 0.3, 0.03):
                 ),
                 query_decider=ThresholdQueryDecider(threshold=0.0),
                 ),
-            estimator=IntBrownGPEstimator(length_scale = 0.4),
+            estimator=IntBrownGPEstimator(),
         ),
         exp_name=f"brown_est_int_brown_var_sel_std{std}",
         exp_path="./eval/brown_est_int_brown_var_sel_std",

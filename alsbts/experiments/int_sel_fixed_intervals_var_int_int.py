@@ -25,7 +25,7 @@ from alts.modules.data_process.process import IntegratingDSProcess
 
 blueprints = []
 for i in np.arange(0, 5, 1):
-    for t in np.arange(1, 20, 1):
+    for t in np.arange(0.1, 20, 0.1):
 
         bp = SbBlueprint(
             repeat=10,
@@ -41,7 +41,7 @@ for i in np.arange(0, 5, 1):
             ),
 
             exp_name=f"int_sel_fixed_intervals_var_int{i}_int{t}",
-            exp_path=f"./eval/int_sel_fixed_intervals_var_int{i}_int",
+            exp_path=f"./eval/int_sel_fixed_intervals_var_int_int",
         )
         blueprints.append(bp)
 

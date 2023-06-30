@@ -1,9 +1,9 @@
 import numpy as np
 from matplotlib import pyplot as plot # type: ignore
 
-from alvsts.modules.change_detector import NoisyChangeDetector
-from alvsts.modules.change_detector import OptimalChangeDetector
-from alvsts.modules.rvs_estimator import NoisyGaussianRVSEstimator
+from alsbts.modules.change_detector import NoisyChangeDetector
+from alsbts.modules.change_detector import OptimalChangeDetector
+from alsbts.modules.rvs_estimator import NoisyGaussianRVSEstimator
 
 from utils import generate_data
 
@@ -14,7 +14,7 @@ opt_cd = OptimalChangeDetector()()
 vs_gts = []
 rvss = []
 times = []
-for data in generate_data(rvs_est, opt_cd, time=1200):
+for data in generate_data(rvs_est, opt_cd, time=1000):
     vs_gt, timeOutput, voltageOutput, knewVOutput, activePowerOutput, reactivePowerOutput, rvs, change = data
     vs_gts.append(vs_gt)
     rvss.append(rvs)

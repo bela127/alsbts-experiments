@@ -27,12 +27,12 @@ from alsbts.modules.selection_criteria import STDSelectionCriteria
 
 blueprints = []
 for i in np.arange(0, 5, 1):
-    for s in np.logspace(-3,-1, 20):
+    for s in np.logspace(-2.5,-1, 15):
 
         bp = SbBlueprint(
             repeat=10,
 
-            process=IntegratingDSProcess(data_source=BrownianDriftDataSource(reinit=True), integration_time=i),
+            process=IntegratingDSProcess(data_source=BrownianDriftDataSource(reinit=True, rbf_leng=0.1), integration_time=i),
 
             experiment_modules=StreamExperiment(
             query_selector=StreamQuerySelector(
@@ -42,11 +42,11 @@ for i in np.arange(0, 5, 1):
                 ),
                 query_decider=ThresholdQueryDecider(threshold=0.0),
                 ),
-                estimator=IntBrownGPEstimator(length_scale = 0.4),
+                estimator=IntBrownGPEstimator(length_scale = 0.1),
             ),
 
             exp_name=f"int_brown_exp_var_int{i}_stdsel{s}",
-            exp_path=f"./eval/int_brown_exp_var_int{i}_stdsel",
+            exp_path=f"./eval/int_brown_exp_var_int_stdsel",
         )
         blueprints.append(bp)
 

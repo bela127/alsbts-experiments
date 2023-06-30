@@ -19,7 +19,7 @@ from alsbts.modules.selection_criteria import ChangeSelectionCriteria
 
 stop_time = 1000
 blueprint = SbBlueprint(
-    repeat=10,
+    repeat=50,
 
         experiment_modules=StreamExperiment(
             query_selector=StreamQuerySelector(
@@ -34,5 +34,5 @@ blueprint = SbBlueprint(
 
 if __name__ == '__main__':
     er = ExperimentRunner([blueprint])
-    er.run_experiments()
+    er.run_experiments_parallel()
 

@@ -27,7 +27,7 @@ from alsbts.modules.selection_criteria import STDSelectionCriteria
 
 blueprints = []
 for i in np.arange(0, 5, 1):
-    for s in np.logspace(-3,-1, 20):
+    for s in np.logspace(-2.5,-1, 15):
 
         bp = SbBlueprint(
             repeat=10,

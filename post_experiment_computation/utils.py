@@ -183,10 +183,13 @@ def plot_meas_per_step_vs_exp_quant(meas_res, exp_quant_name = "exp_quant"):
 
 
 def save(name, path):
+    plot.rcParams.update({'font.size': 8})
+    plot.figure(figsize=(10,6))
     plot.title(name)
     loc = os.path.join(path,f"{name}.svg")
     plot.savefig(loc, format="svg")
     plot.clf()
+
 
 @dataclass
 class DataComputer:

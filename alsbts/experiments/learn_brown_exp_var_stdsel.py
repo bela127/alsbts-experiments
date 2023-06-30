@@ -21,10 +21,10 @@ from alsbts.modules.selection_criteria import STDSelectionCriteria
 
 
 blueprints = []
-for std in np.arange(0.0025, 0.75, 0.005):
+for std in np.logspace(-2.5,-1, 15):
 
     bp = SbBlueprint(
-        repeat=20,
+        repeat=10,
 
         experiment_modules=StreamExperiment(
             query_selector=StreamQuerySelector(

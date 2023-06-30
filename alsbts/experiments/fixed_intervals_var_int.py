@@ -21,10 +21,10 @@ from alsbts.modules.blueprint import SbBlueprint
 
 blueprints = []
 stop_time = 1000
-for t in np.arange(1, 20, 1):
+for t in np.logspace(-1,2.3, 25): #np.arange(0.1, 20, 0.1):
 
     bp = SbBlueprint(
-        repeat=10,
+        repeat=50,
 
         experiment_modules=StreamExperiment(
             query_selector=StreamQuerySelector(

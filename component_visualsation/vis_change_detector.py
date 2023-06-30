@@ -1,9 +1,9 @@
 import numpy as np
 from matplotlib import pyplot as plot # type: ignore
 
-from alvsts.modules.change_detector import NoisyChangeDetector
-from alvsts.modules.change_detector import OptimalChangeDetector
-from alvsts.modules.rvs_estimator import OptimalRVSEstimator
+from alsbts.modules.change_detector import NoisyChangeDetector
+from alsbts.modules.change_detector import OptimalChangeDetector
+from alsbts.modules.rvs_estimator import OptimalRVSEstimator
 
 from utils import generate_data
 

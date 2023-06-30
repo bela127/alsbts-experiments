@@ -21,9 +21,9 @@ from alsbts.modules.change_detector import NoisyChangeDetector
 
 blueprints = []
 
-for miss in np.arange(0, 0.50, 0.05):
+for miss in np.arange(0, 0.80, 0.05):
     bp = SbBlueprint(
-        repeat=10,
+        repeat=50,
 
         experiment_modules=StreamExperiment(
             query_selector=StreamQuerySelector(
