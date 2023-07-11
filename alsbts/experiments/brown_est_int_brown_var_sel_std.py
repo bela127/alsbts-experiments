@@ -23,11 +23,11 @@ from alts.modules.data_process.time_source import IterationTimeSource
 
 
 blueprints = []
-for std in np.logspace(-2.2,0.2, 20):
+for std in np.logspace(0.2,-2.2, 20):
 
     bp = SbBlueprint(
         repeat=50,
-        time_source = IterationTimeSource(time_step=0.2),
+        time_source = IterationTimeSource(time_step=0.5),
         experiment_modules=StreamExperiment(
             query_selector=StreamQuerySelector(
                 query_optimizer=NoQueryOptimizer(
