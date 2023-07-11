@@ -1,13 +1,17 @@
 from dataclasses import dataclass
 from typing import Any
 from typing_extensions import Protocol
-from matplotlib import pyplot as plot
+import matplotlib
+from matplotlib import pyplot as plt
 from nptyping import NDArray, Shape, Number, Float
 import numpy as np
 import os
+import random
 
 
 sim_time = 1000
+base_path = "/home/bela/Cloud/Arbeit/KIT/Planed_Paper/estimation under brownean drift/experiment_raw_data/eval"
+save_path = "/home/bela/Cloud/Arbeit/KIT/Planed_Paper/estimation under brownean drift/fig/exp_figures"
 
 @dataclass
 class RunRes():
@@ -21,14 +25,15 @@ class RunRes():
     result: NDArray[Shape["Batch, 1"], Number]
 
     estimation: NDArray[Shape["Batch, 1"], Number]
+    est_var: NDArray[Shape["Batch, 1"], Number]
     gt: NDArray[Shape["Batch, 1"], Number]
 
     query_time: NDArray[Shape["Batch, 1"], Number]
     query_var: NDArray[Shape["Batch, 1"], Number]   
 
 def plot_pred_vs_gt(sim_res: RunRes):
-    plot.plot(sim_res.time, sim_res.estimation)
-    plot.plot(sim_res.time, sim_res.gt)
+    plt.plot(sim_res.time, sim_res.estimation)
+    plt.plot(sim_res.time, sim_res.gt)
 
 def calc_measurements(sim_res: RunRes)-> int:
     measurements: int = sim_res.result.shape[0]
@@ -93,100 +98,275 @@ class EvalRes():
 def norm_time(time):
     return time / sim_time
 
-def plot_rmse_over_exp_quant(eval_res: EvalRes, exp_quant_name = "exp_quant"):
+def plot_rmse_over_exp_quant(ax, eval_res: EvalRes, exp_quant_name = "exp_quant", color=None):
     
-    plot.plot(eval_res.exp_quantity, eval_res.mean_rmse, label=f"Mean {exp_quant_name}")
-    plot.fill_between(
+    ax.plot(eval_res.exp_quantity, eval_res.mean_rmse, label=f"Mean {exp_quant_name}", color=color)
+    ax.fill_between(
         eval_res.exp_quantity,
         eval_res.mean_rmse - eval_res.std_rmse*1.96,
         eval_res.mean_rmse + eval_res.std_rmse*1.96,
         alpha=0.1,
-        color="black",
-        label=r"$\pm$ 1 std. dev.",
+        color=color,
+        #label=r"$\pm$ 1 std. dev.",
     )
-    plot.xlabel(exp_quant_name)
-    plot.ylabel("rmse")
+    ax.set_xlabel(exp_quant_name)
+    ax.set_ylabel("$RMSE$")
 
-def plot_rmse_over_mean_meas(eval_res: EvalRes, exp_quant_name = "exp_quant"):
+def plot_rmse_over_stdsel(ax, eval_res: EvalRes, exp_quant_name = "exp_quant", color=None):
     
-    plot.plot(eval_res.mean_meas, eval_res.mean_rmse, label=f"Mean {exp_quant_name}")
-    plot.fill_between(
-        eval_res.mean_meas,
+    ax.plot(eval_res.exp_quantity, eval_res.mean_rmse, label=f"{exp_quant_name}", color=color)
+    ax.fill_between(
+        eval_res.exp_quantity,
         eval_res.mean_rmse - eval_res.std_rmse*1.96,
         eval_res.mean_rmse + eval_res.std_rmse*1.96,
         alpha=0.1,
-        color="black",
-        label=r"$\pm$ 1 std. dev.",
+        color=color,
+        #label=r"$\pm$ 1 std. dev.",
     )
-    plot.xlabel("nr of measurements")
-    plot.ylabel("rmse")
-    plot.ylim(0, 1)
-    plot.xlim(0,1000)
+    ax.set_xlabel(r"$\sqrt{v_{target}}$")
+    ax.set_ylabel("$RMSE$")
 
-def plot_sum_meas_over_time(meas_res, exp_quant_name = "exp_quant"):
+def plot_rmse_over_mean_meas(ax, eval_res: EvalRes, exp_quant_name = "exp_quant", print_var =False, color=None, style=None, marker=None):
+
+    if marker is not None:
+        ax.plot(eval_res.mean_meas, eval_res.mean_rmse, color=color, linestyle=style)
+
+        x,y = random.choice(list(zip(eval_res.mean_meas, eval_res.mean_rmse)))
+        ax.scatter(x, y, marker=marker, label=exp_quant_name, color=color)
+    else:
+        ax.plot(eval_res.mean_meas, eval_res.mean_rmse, label=exp_quant_name, color=color, linestyle=style)
+
+    if print_var:
+        ax.fill_between(
+            eval_res.mean_meas,
+            eval_res.mean_rmse - eval_res.std_rmse*1.96,
+            eval_res.mean_rmse + eval_res.std_rmse*1.96,
+            alpha=0.2,
+            color=color,
+            label=r"$\pm$ 1 std. dev.",
+            linewidth=0,
+        )
+    else:
+        ax.fill_between(
+            eval_res.mean_meas,
+            eval_res.mean_rmse - eval_res.std_rmse*1.96,
+            eval_res.mean_rmse + eval_res.std_rmse*1.96,
+            alpha=0.2,
+            color=color,
+            linewidth=0,
+        )
+
+    ax.set_xlabel("Nr. of measurements")
+    ax.set_ylabel('$RMSE$')
+
+def plot_sum_meas_over_time(ax, meas_res, exp_quant_name = "exp_quant", color=None):
 
     for exp_quantity, times, mean_measures, std_meas in zip(*meas_res):
     
-        plot.plot(times, mean_measures, label=f"Mean for {exp_quant_name}={exp_quantity:.3f}")
-        plot.fill_between(
+        ax.plot(times, mean_measures, label=f"Mean for {exp_quant_name}={exp_quantity:.3f}", color=color)
+        ax.fill_between(
             times,
             mean_measures - std_meas*1.96,
             mean_measures + std_meas*1.96,
             alpha=0.1,
-            color="black",
+            color=color,
             #label=r"$\pm$ 1 std. dev.",
         )
-        plot.xlabel("time")
-        plot.ylabel("total acquired measurements")
+        ax.set_xlabel("time")
+        ax.set_ylabel("total acquired measurements")
 
-def plot_meas_over_time(meas_res, exp_quant_name = "exp_quant"):
+def plot_meas_over_time(ax, meas_res, exp_quant_name = "exp_quant", color=None):
+    colors = []
 
-    for exp_quantity, times, mean_measures, std_meas in zip(*meas_res):
+    for i, (exp_quantity, times, mean_measures, std_meas) in enumerate(zip(*meas_res)):
+        if isinstance(color, list):
+            color = color[i]
     
-        plot.plot(times, mean_measures/times, label=f"Mean for {exp_quant_name}={exp_quantity:.3f}")
-        plot.fill_between(
+        ax.plot(times, mean_measures/times, label=f"{exp_quant_name}={exp_quantity:.3f}", color=color)
+        colors.append(plt.gca().lines[-1].get_color())
+        ax.fill_between(
             times,
             (mean_measures - std_meas*1.96)/times,
             (mean_measures + std_meas*1.96)/times,
             alpha=0.1,
-            color="black",
+            color=plt.gca().lines[-1].get_color(),
             #label=r"$\pm$ 1 std. dev.",
         )
-        plot.xlabel("time")
-        plot.ylabel("acquired measurements")
+    ax.set_xlabel("time $t$")
+    ax.set_ylabel("$m_{su}$ = meas. / $su$")
+    return colors
 
 
-def plot_meas_per_step_vs_exp_quant(meas_res, exp_quant_name = "exp_quant"):
+def plot_meas_per_step_vs_exp_quant(ax, meas_res, exp_quant_name = "exp_quant", color=None):
     exp_quantities, _,_,_ = meas_res
 
     mean_meass = []
     mean_stds = []
     for exp_quantity, times, mean_measures, std_meas in zip(*meas_res):
-        mean_meass.append(np.median(mean_measures/times))
-        mean_stds.append(np.median(std_meas/times))
+        mean_meas = np.median(mean_measures/times)
+        mean_std = np.median(std_meas/times)
+        mean_meass.append(mean_meas)
+        mean_stds.append(mean_std)
+        if mean_meas ==  1.0:
+            print(mean_meas)
+
+    #for exp_quantity, mean_meas in list(zip(exp_quantities, mean_meass))[::2]:
+    #    print(exp_quantity, mean_meas)
 
     exp_quantities = np.asarray(exp_quantities)
     mean_meass = np.asarray(mean_meass)
     mean_stds = np.asarray(mean_stds)
     
-    plot.plot(exp_quantities, mean_meass, label=f"Mean for {exp_quant_name}")
-    plot.fill_between(
+    ax.plot(exp_quantities, mean_meass, label=f"{exp_quant_name}", color=color)
+    ax.fill_between(
         exp_quantities,
         mean_meass - mean_stds*1.96,
         mean_meass + mean_stds*1.96,
         alpha=0.1,
-        color="black",
-        label=r"$\pm$ 1 std. dev.",
+        color=color,
+        #label=r"$\pm$ 1 std. dev.",
     )
-    plot.xlabel(exp_quant_name)
-    plot.ylabel("acquired measurements per step")
+    ax.set_xlabel(r"$v_{target}$")
+    ax.set_ylabel(r"$\bar{m}_{su} = \mathbb{E}[$meas.$ / su]$")
 
 
-def save(name, path):
-    plot.title(name)
+linestyle = {
+     'dashdot': 'dashdot',  # Same as '-.'
+     'solid':                 (0, ()),
+     #'loosely dotted':        (0, (1, 10)),
+     'dotted':                (0, (1, 1)),
+     #'long dash with offset': (5, (10, 3)),
+     #'loosely dashed':        (0, (5, 10)),
+     'dashed':                (0, (5, 5)),
+     'densely dashed':        (0, (5, 1)),
+
+     #'loosely dashdotted':    (0, (3, 10, 1, 10)),
+     'dashdotted':            (0, (3, 5, 1, 5)),
+     'densely dashdotted':    (0, (3, 1, 1, 1)),
+
+     'dashdotdotted':         (0, (3, 5, 1, 5, 1, 5)),
+     #'loosely dashdotdotted': (0, (3, 10, 1, 10, 1, 10)),
+     'densely dashdotdotted': (0, (3, 1, 1, 1, 1, 1)),
+}
+
+colors = [
+            "#88CCEE",
+            "#CC6677",
+            "#DDCC77",
+            "#117733",
+            "#332288",
+            "#AA4499",
+            "#44AA99",
+            "#999933",
+            "#882255",
+            "#661100",
+            "#888888"
+        ]
+
+marker = [
+    "o",
+    "v",
+    "^",
+    "<",
+    ">",
+    "1",
+    "2",
+    "3",
+    "4",
+    "s",
+    "*",
+    "+",
+    "x",
+    "d",
+]
+
+appr_style = {
+    "CM": (colors[5], linestyle['dashed'], marker[5]),
+    "CI": (colors[7], linestyle['solid'], marker[0]),
+    "CEm": (colors[2], linestyle['dotted'], marker[1]),
+    "CEo": (colors[6], linestyle['dashdotted'], marker[2]),
+    "CEw": (colors[3], linestyle['densely dashdotdotted'], marker[4]),
+    "CAL": (colors[1], linestyle['dashdot'], marker[13]),
+    "CALm": (colors[8], linestyle['densely dashdotted'], marker[0]),
+    "BR": (colors[0], linestyle['dashdotdotted'], marker[11]),
+    "IB": (colors[4], linestyle['densely dashed'], marker[10]),
+    "BRt": (colors[9], linestyle['dashdotdotted'],marker[12]),
+}
+
+
+def save(fig, name, path):
+    #plt.title(name)
+    fig.tight_layout()
     loc = os.path.join(path,f"{name}.svg")
-    plot.savefig(loc, format="svg")
-    plot.clf()
+    fig.savefig(loc, format="svg", bbox_inches='tight', transparent="True", pad_inches=0)
+    fig.clf()
+
+def set_size(width="paper_2c", fraction:float=1, subplots=(1, 1), hfrac=1):
+    """Set figure dimensions to avoid scaling in LaTeX.
+
+    Parameters
+    ----------
+    width: float or string
+            Document width in points, or string of predined document type
+    fraction: float, optional
+            Fraction of the width which you wish the figure to occupy
+    subplots: array-like, optional
+            The number of rows and columns of subplots.
+    Returns
+    -------
+    fig_dim: tuple
+            Dimensions of figure in inches
+    """
+    if width == 'paper_2c':
+        width_pt = 252
+    elif width == 'paper':
+        width_pt = 516
+    elif width == 'thesis':
+        width_pt = 426.79135
+    elif width == 'beamer':
+        width_pt = 307.28987
+    else:
+        width_pt = width
+
+    # Width of figure (in pts)
+    fig_width_pt = width_pt * fraction
+    # Convert from pt to inches
+    inches_per_pt = 1 / 72.27
+
+    # Golden ratio to set aesthetic figure height
+    # https://disq.us/p/2940ij3
+    golden_ratio: float = (5**.5 - 1) / 2
+
+    # Figure width in inches
+    fig_width_in = fig_width_pt * inches_per_pt
+    # Figure height in inches
+    fig_height_in = fig_width_in * golden_ratio * 1.2 * hfrac * (subplots[0] / subplots[1])
+
+    return (fig_width_in, fig_height_in)
+
+def create_fig(width="paper_2c", fraction:float =1, subplots=(1, 1), hfrac:float=1):
+    plt.style.use('seaborn-v0_8-paper')
+
+    tex_fonts = {
+        # Use LaTeX to write all text
+        "text.usetex": True,
+        "text.latex.preamble": r'\usepackage{amssymb}',
+        "font.family": "serif",
+        # Use 10pt font in plots, to match 10pt font in document
+        "axes.labelsize": 10,
+        "font.size": 10,
+        # Make the legend/label fonts a little smaller
+        "legend.fontsize": 6,
+        "xtick.labelsize": 8,
+        "ytick.labelsize": 8,
+    }
+
+    plt.rcParams.update(tex_fonts)
+
+
+    fig, axs = plt.subplots(subplots[0], subplots[1], figsize=set_size(width=width, fraction=fraction, subplots=subplots, hfrac=hfrac))
+    #axs.set_prop_cycle(line_cycler)
+    return fig, axs
 
 @dataclass
 class DataComputer:
@@ -216,6 +396,13 @@ class DataComputer:
         data_estimation = self.load_file(file_path, file_estimation)
         data_gt = self.load_file(file_path, file_gt)
 
+        if data_estimation.shape[1] > 1:
+            estimation = data_estimation[self.skip_points:,:1]
+            est_var = data_estimation[self.skip_points:,1:]
+        else:
+            estimation = data_estimation[self.skip_points:]
+            est_var = np.zeros_like(estimation)
+
         run_res = RunRes(
             run_path=run_path,
             run_name=run_name,
@@ -223,7 +410,8 @@ class DataComputer:
             var = data_stream[self.skip_points:,1:],
             query = data_result[self.skip_points:,:-1],
             result = data_result[self.skip_points:,-1:],
-            estimation = data_estimation[self.skip_points:],
+            estimation = estimation,
+            est_var = est_var,
             gt = data_gt[self.skip_points:,-1:],
             query_time = data_gt[self.skip_points:,:1],
             query_var= data_gt[self.skip_points:,1:2]

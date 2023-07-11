@@ -257,7 +257,7 @@ def plot_integral(gp: GPy.models.GPRegression):
     plt.ylabel('y')
 
 res = y_train[:,None]* (t_train_up - t_train_low)
-k = IntegralBrown(variance=1) + GPy.kern.Bias(input_dim=1, variance=0.1)
+k = IntegralBrown(variance=1)
 m = GPy.models.GPRegression(train, res, k, noise_var=0.0001)
 
 
