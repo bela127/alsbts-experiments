@@ -23,7 +23,7 @@ blueprints = []
 for offset in np.arange(0, 15, 1):
 
     bp = SbBlueprint(
-        repeat=10,
+        repeat=50,
 
         experiment_modules=StreamExperiment(
             query_selector=StreamQuerySelector(

@@ -23,22 +23,22 @@ from alts.modules.data_process.process import DataSourceProcess
 
 
 blueprints = []
-for var in np.logspace(-3,-1, 20):
+for std in np.logspace(-2.2,0.2, 20):
 
     bp = SbBlueprint(
-        repeat=10,
+        repeat=50,
 
         experiment_modules=StreamExperiment(
             query_selector=StreamQuerySelector(
                 query_optimizer=NoQueryOptimizer(
-                    selection_criteria= STDSelectionCriteria(std_threshold=var),
+                    selection_criteria= STDSelectionCriteria(std_threshold=std),
                     query_sampler=StreamQuerySampler(),
                 ),
                 query_decider=ThresholdQueryDecider(threshold=0.0),
                 ),
-            estimator=GPEstimator(length_scale = 0.4),
+            estimator=GPEstimator(),
         ),
-        exp_name=f"rbf_exp_var_stdsel{var}",
+        exp_name=f"rbf_exp_var_stdsel{std}",
         exp_path="./eval/rbf_exp_var_stdsel",
     )
     blueprints.append(bp)
@@ -46,6 +46,6 @@ for var in np.logspace(-3,-1, 20):
 
 if __name__ == '__main__':
     er = ExperimentRunner(blueprints)
-    er.run_experiments_parallel()
+    er.run_experiments_parallel(nr_processes=8)
 
     

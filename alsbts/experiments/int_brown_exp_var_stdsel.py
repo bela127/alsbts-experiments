@@ -23,7 +23,7 @@ from alts.modules.data_process.process import DataSourceProcess, IntegratingDSPr
 
 
 blueprints = []
-for var in np.logspace(-3,-1, 20):
+for std in np.logspace(-2.5,-1, 15):
 
     bp = SbBlueprint(
         repeat=10,
@@ -33,14 +33,14 @@ for var in np.logspace(-3,-1, 20):
         experiment_modules=StreamExperiment(
             query_selector=StreamQuerySelector(
                 query_optimizer=NoQueryOptimizer(
-                    selection_criteria= STDSelectionCriteria(std_threshold=var),
+                    selection_criteria= STDSelectionCriteria(std_threshold=std),
                     query_sampler=StreamQuerySampler(),
                 ),
                 query_decider=ThresholdQueryDecider(threshold=0.0),
                 ),
             estimator=IntBrownGPEstimator(length_scale = 0.4),
         ),
-        exp_name=f"int_brown_exp_var_stdsel{var}",
+        exp_name=f"int_brown_exp_var_stdsel{std}",
         exp_path="./eval/int_brown_exp_var_stdsel",
     )
     blueprints.append(bp)

@@ -23,14 +23,14 @@ blueprints = []
 for wrong in np.arange(0, 0.10, 0.005):
 
     bp = SbBlueprint(
-        repeat=10,
+        repeat=50,
 
         experiment_modules=StreamExperiment(
             query_selector=StreamQuerySelector(
                 query_optimizer=NoQueryOptimizer(
                     selection_criteria= ChangeSelectionCriteria(
                         change_detector=NoisyChangeDetector(
-                            change_offset_std=2,
+                            change_offset_std=1,
                             wrong_detection_ratio=wrong,
                             missed_detection_ratio=0.015,
                         ),

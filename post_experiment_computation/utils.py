@@ -368,6 +368,7 @@ def create_fig(width="paper_2c", fraction:float =1, subplots=(1, 1), hfrac:float
     #axs.set_prop_cycle(line_cycler)
     return fig, axs
 
+
 @dataclass
 class DataComputer:
     sort_index: int = 3

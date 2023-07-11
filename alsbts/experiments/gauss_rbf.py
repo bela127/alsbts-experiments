@@ -25,7 +25,7 @@ from alsbts.modules.selection_criteria import PreTrainIntervalSelectionCriteria
 blueprints = []
 
 bp = SbBlueprint(
-    repeat=10,
+    repeat=50,
 
     experiment_modules=StreamExperiment(
         query_selector=StreamQuerySelector(
@@ -35,7 +35,7 @@ bp = SbBlueprint(
             ),
             query_decider=ThresholdQueryDecider(threshold=0.0),
             ),
-        estimator=GPEstimator(length_scale = 0.4),
+        estimator=GPEstimator(),
     ),
     exp_name=f"gauss_rbf",
     exp_path="./eval/gauss_rbf",
@@ -45,6 +45,6 @@ blueprints.append(bp)
 
 if __name__ == '__main__':
     er = ExperimentRunner(blueprints)
-    er.run_experiments()
+    er.run_experiments_parallel()
 
     

@@ -40,7 +40,7 @@ for var in np.arange(0, 0.005, 0.0005):
                 ),
                 query_decider=ThresholdQueryDecider(threshold=0.0),
                 ),
-            estimator=GPEstimator(length_scale = 0.4),
+            estimator=GPEstimator(length_scale = 0.5),
         ),
         exp_name=f"rbf_exp_var_brown{var}",
         exp_path="./eval/rbf_exp_var_brown",

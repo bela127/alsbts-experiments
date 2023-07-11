@@ -27,9 +27,9 @@ from alts.modules.data_process.process import DataSourceProcess, IntegratingDSPr
 
 
 
-blueprints = []
+xblueprints = []
 for i in np.arange(1, 5, 1):
-    for var in np.logspace(-3,-1, 20):
+    for var in np.logspace(-2.5,-1, 15):
 
         bp = SbBlueprint(
             repeat=10,
@@ -49,9 +49,9 @@ for i in np.arange(1, 5, 1):
             exp_name=f"wint_brown_var_wint{i}_sdtsel{var}",
             exp_path="./eval/wint_brown_var_wint_sdtsel",
         )
-        blueprints.append(bp)
+        xblueprints.append(bp)
 
 
 if __name__ == '__main__':
-    er = ExperimentRunner(blueprints)
+    er = ExperimentRunner(xblueprints)
     er.run_experiments_parallel()

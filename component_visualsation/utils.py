@@ -1,7 +1,7 @@
 
 import numpy as np
-from alvsts.modules.rvs_estimator import RVSEstimator
-from alvsts.modules.change_detector import ChangeDetector
+from alsbts.modules.rvs_estimator import RVSEstimator
+from alsbts.modules.change_detector import ChangeDetector
 
 
 def generate_data(rvs_estimator: RVSEstimator, cd: ChangeDetector, vs_min = 0, vs_max = 2, time = 600):
