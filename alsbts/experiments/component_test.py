@@ -3,7 +3,7 @@ from alts.core.experiment_runner import ExperimentRunner
 from alsbts.modules.blueprint import SbBlueprint
 from alts.modules.evaluator import PrintTimeSourceEvaluator
 from alts.modules.data_process.time_source import IterationTimeSource
-from alts.modules.data_process.process import WindowDSProcess, IntegratingDSProcess, WindowDSProcess
+from alts.modules.data_process.process import IntegratingDSProcess, WindowDSProcess
 from alts.modules.oracle.data_source import BrownianDriftDataSource
 
 stop_time = 1000
