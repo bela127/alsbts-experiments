@@ -23,7 +23,7 @@ from alts.modules.data_process.process import DataSourceProcess, IntegratingDSPr
 
 
 blueprints = []
-for std in np.logspace(-2.5,-1, 15):
+for std in np.logspace(0.2,-2.2,20):
 
     bp = SbBlueprint(
         repeat=10,
