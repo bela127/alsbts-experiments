@@ -18,7 +18,7 @@ from alsbts.modules.estimator import GPEstimator
 from alsbts.modules.selection_criteria import PreTrainIntervalSelectionCriteria
 
 from alts.modules.oracle.data_source import BrownianDriftDataSource
-from alts.modules.data_process.process import DataSourceProcess
+from alts.modules.data_process.process import DelayedStreamProcess
 
 
 
@@ -28,7 +28,7 @@ for var in np.arange(0, 0.005, 0.0005):
     bp = SbBlueprint(
         repeat=10,
 
-        process = DataSourceProcess(
+        process = DelayedStreamProcess(
             data_source=BrownianDriftDataSource(reinit=True, rbf_leng=0.5, brown_var=var),
         ),
 
