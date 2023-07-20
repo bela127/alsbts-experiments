@@ -1,7 +1,7 @@
 
 from alts.core.experiment_runner import ExperimentRunner
 from alsbts.modules.blueprint import SbBlueprint
-from alts.modules.evaluator import PrintTimeSourceEvaluator
+from alts.modules.evaluator import PrintTimeSourceEvaluator, PrintNewDataPointsEvaluator, PrintQueryEvaluator
 from alts.modules.data_process.time_source import IterationTimeSource
 from alts.modules.data_process.process import IntegratingDSProcess, WindowDSProcess
 from alts.modules.oracle.data_source import BrownianDriftDataSource
@@ -13,7 +13,7 @@ blueprint1 = SbBlueprint(
     exp_path="./eval/component_test",
 
     time_source = IterationTimeSource(time_step=1),
-    evaluators=(PrintTimeSourceEvaluator(),*SbBlueprint.evaluators),
+    evaluators=(PrintTimeSourceEvaluator(), PrintNewDataPointsEvaluator(), PrintQueryEvaluator(), *SbBlueprint.evaluators),
 )
 
 blueprint2 = SbBlueprint(

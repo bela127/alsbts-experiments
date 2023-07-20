@@ -3,7 +3,7 @@ from alts.core.experiment_runner import ExperimentRunner
 
 from alsbts.modules.blueprint import SbBlueprint
 
-from alsbts.modules.query.query_selector import StreamQuerySelector
+from alts.core.query.query_selector import StreamQuerySelector
 
 
 from alsbts.core.experiment_modules import StreamExperiment
