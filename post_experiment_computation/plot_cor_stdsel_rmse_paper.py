@@ -9,21 +9,21 @@ dc =DataComputer(
 )
 eval_res = dc.load_exp()
 
-dc =DataComputer(
-    base_path=os.path.join(base_path,"./brown_est_int_brown_var_sel_std"),
-    sub_exp_folder="brown_est_int_brown_var_sel_std",
-)
-eval_res2 = dc.load_exp()
+#dc =DataComputer(
+#    base_path=os.path.join(base_path,"./brown_est_int_brown_var_sel_std"),
+#    sub_exp_folder="brown_est_int_brown_var_sel_std",
+#)
+#eval_res2 = dc.load_exp()
 
 eval_res.exp_quantity = np.sqrt(eval_res.exp_quantity) / 1.96
-eval_res2.exp_quantity = np.sqrt(eval_res2.exp_quantity) / 1.96
+#eval_res2.exp_quantity = np.sqrt(eval_res2.exp_quantity) / 1.96
 
 fig, ax = create_fig(subplots=(1,1), width="paper", fraction=1/2)
 
-plot_rmse_over_stdsel(ax, eval_res, exp_quant_name=r"$\mathbf{Brown}\:v_{target}\in[10^{-1},10^{-2,5}]$", color=appr_style["BR"][0])
-plot_rmse_over_stdsel(ax, eval_res2, exp_quant_name=r"$\mathbf{Int\_Brown}\:v_{target}\in[10^{-1},10^{-2,5}]$", color=appr_style["IB"][0])
+plot_rmse_over_stdsel(ax, eval_res, exp_quant_name=r"$\textbf{DEAL}\:\mathbf{v_{target}\in[10^{-2,5}, 10^{-1}]}$", color=appr_style["BR"][0])
+#plot_rmse_over_stdsel(ax, eval_res2, exp_quant_name=r"$\mathbf{Int\_Brown}\:v_{target}\in[10^{-1},10^{-2,5}]$", color=appr_style["IB"][0])
 equal_line = np.arange(0, 0.8, 0.1)
-plt.plot(equal_line, equal_line,label="Ideal Relation", color="black", linestyle=linestyle["dotted"])
+plt.plot(equal_line, equal_line,label="$RMSE = \mathbf{\sqrt{v_{target}}}$ (ideal)", color="black", linestyle=linestyle["dotted"])
 
 ax.set_title("Correlation Between Threshold and RMSE")
 plt.xlim(0.0,0.6)

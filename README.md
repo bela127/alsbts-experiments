@@ -1,99 +1,75 @@
+## Installation:
 
+### Recommended tools for python management
+We recommend the following tools which do python version management and dependency management for you.
 
-#### Install package via poetry
+install pyenv dependencies:
 
-The following creates a venv, and installs all dependencies but matlab
+```bash
+sudo apt update
+sudo apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev \
+libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev \
+xz-utils tk-dev libffi-dev liblzma-dev python-openssl git
+```
 
-'''
+install pyenv:
+
+```bash
+curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
+```
+
+add it to bash, by adding the following to the bottom of the file  `~/.bashrc`, replace `USER`:
+
+```bash
+export PATH="/home/USER/.pyenv/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+```
+
+install python version:
+
+```bash
+pyenv install 3.9.6
+```
+
+install poetry:
+
+```bash
+curl -sSL https://install.python-poetry.org | python3 -
+```
+
+add it to bash, by adding the following to the bottom of the file  `~/.bashrc`:
+
+```bash
+export PATH="/home/USER/.local/bin:$PATH"
+```
+
+set poetry to use pyenv:
+
+```bash
+poetry config virtualenvs.prefer-active-python true
+```
+
+And make sure venv are created inside a project:
+
+```bash
+poetry config virtualenvs.in-project true
+```
+
+### Project installation
+Clone the git repo, open a terminal inside the repo, install project dependencies:
+
+```bash
 poetry install
-'''
+```
 
-then start the created venv:
-'''
-source ./.venv/bin/activate
-'''
+wait for all dependencies to install.
 
+YOU HAVE FINISHED INSTALLATION
 
-#### Install matlab
+## Running Experiments:
+Each file in `./alsbts/experiments` is one experiment, just execute them using the installed python environment.
+You can use `./run.py` to run them all.
 
-Under Linux:
-you need to change the default path during the matlab installation to a path in your user home dir:
-"/home/$USER/MATLAB/R2021b"
-
-#### Verify Your Configuration
-
-Before you install, verify your Python and MATLAB configurations.
-
-    Check that your system has a supported version of Python and MATLAB R2014b or later. For more information, see Versions of Python Compatible with MATLAB Products by Release .
-    
-    To check that Python is installed on your system, run Python at the operating system prompt.
-    
-    Add the folder that contains the Python interpreter to your path, if it is not already there.
-    
-    Find the path to the MATLAB folder. Start MATLAB and type matlabroot in the command window. Copy the path returned by matlabroot.
-
-#### Install the Engine API
-
-To install the engine API, choose one of the following. You must call this python install command in the specified folder.
-
-    At a Windows operating system prompt (you might need administrator privileges to execute these commands) —
-    
-    '''
-    cd "$matlabroot\extern\engines\python"
-    python setup.py install
-    '''
-    
-    At a macOS or Linux operating system prompt (you might need administrator privileges to execute these commands) —
-    
-    '''
-    cd "$matlabroot/extern/engines/python"
-    python setup.py install
-    '''
-    
-    or
-    
-    '''
-    cd "$matlabroot/extern/engines/python"
-    pip install -e ./
-    '''
-
-build the package:
-    '''
-    cd "$matlabroot/extern/engines/python"
-    python setup.py build
-    '''
-
-add a pyproject.toml to the "$matlabroot/extern/engines/python/build/lib", with following content:
-
-'''
-[tool.poetry]
-name = "matlab"
-version = "1.0.0"
-description = "pyproject pakage for matlab engin"
-authors = ["bela127 <bhb127@outlook.de>"]
-license = "MIT"
-
-[tool.poetry.dependencies]
-python = ">=3.8,<3.10"
-
-[tool.poetry.dev-dependencies]
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
-
-'''
-
-install all dependencies with poetry:
-'''
-poetry install
-'''
-
-
-### Install new packages after matlab engin installation
-The matlab engin brakes poetry version parser, this is why every time a new package needs installation one has to uninstall *matlabengineforpython* install the package and reinstall it like described above in **Install the Engine API**.
-
-To uninstall just run:
-'''
-pip remove matlabengineforpython
-'''
+To produce the experiment result plots run the scripts in `./post_experiment_computation` and `./component_visualsation`.
+For beautiful plots you may require a local latex installation, if this is not possible you should change the line `"text.usetex": True,` in `./post_experiment_computation/utils.py` to `FALSE`.

@@ -123,7 +123,7 @@ def plot_rmse_over_stdsel(ax, eval_res: EvalRes, exp_quant_name = "exp_quant", c
         color=color,
         #label=r"$\pm$ 1 std. dev.",
     )
-    ax.set_xlabel(r"$\sqrt{v_{target}}$")
+    ax.set_xlabel(r"$std_{\textit{target}} = \sqrt{v_{target}}$")
     ax.set_ylabel("$RMSE$")
 
 def plot_rmse_over_mean_meas(ax, eval_res: EvalRes, exp_quant_name = "exp_quant", print_var =False, color=None, style=None, marker=None):
@@ -227,7 +227,7 @@ def plot_meas_per_step_vs_exp_quant(ax, meas_res, exp_quant_name = "exp_quant", 
         #label=r"$\pm$ 1 std. dev.",
     )
     ax.set_xlabel(r"$v_{target}$")
-    ax.set_ylabel(r"$\bar{m}_{su} = \mathbb{E}[$meas.$ / su]$")
+    ax.set_ylabel(r"$\bar{m}_{su} = \mathbf{avr}[$meas.$ / su]$")
 
 
 linestyle = {
@@ -294,14 +294,14 @@ appr_style = {
 }
 
 
-def save(fig, name, path):
+def save(fig, name, path, format="svg"):
     #plt.title(name)
     fig.tight_layout()
-    loc = os.path.join(path,f"{name}.svg")
-    fig.savefig(loc, format="svg", bbox_inches='tight', transparent="True", pad_inches=0)
+    loc = os.path.join(path,f"{name}.{format}")
+    fig.savefig(loc, format=format, bbox_inches='tight', transparent="True", pad_inches=0)
     fig.clf()
 
-def set_size(width="paper_2c", fraction:float=1, subplots=(1, 1), hfrac=1):
+def set_size(width="paper_2c", fraction:float=1, subplots=(1, 1), hfrac=1., vfrac=1.):
     """Set figure dimensions to avoid scaling in LaTeX.
 
     Parameters
@@ -325,8 +325,10 @@ def set_size(width="paper_2c", fraction:float=1, subplots=(1, 1), hfrac=1):
         width_pt = 426.79135
     elif width == 'beamer':
         width_pt = 307.28987
-    else:
+    elif isinstance(width, float):
         width_pt = width
+    else:
+        raise ValueError(f"{width=} is no known size")
 
     # Width of figure (in pts)
     fig_width_pt = width_pt * fraction
@@ -342,14 +344,16 @@ def set_size(width="paper_2c", fraction:float=1, subplots=(1, 1), hfrac=1):
     # Figure height in inches
     fig_height_in = fig_width_in * golden_ratio * 1.2 * hfrac * (subplots[0] / subplots[1])
 
+    fig_width_in = fig_width_in * vfrac #Partial width
+
     return (fig_width_in, fig_height_in)
 
-def create_fig(width="paper_2c", fraction:float =1, subplots=(1, 1), hfrac:float=1):
+def create_fig(width="paper_2c", fraction:float =1, subplots=(1, 1), hfrac:float=1, vfrac:float=1):
     plt.style.use('seaborn-v0_8-paper')
 
     tex_fonts = {
         # Use LaTeX to write all text
-        "text.usetex": True,
+        "text.usetex": True, #True,
         "text.latex.preamble": r'\usepackage{amssymb}',
         "font.family": "serif",
         # Use 10pt font in plots, to match 10pt font in document
@@ -364,7 +368,7 @@ def create_fig(width="paper_2c", fraction:float =1, subplots=(1, 1), hfrac:float
     plt.rcParams.update(tex_fonts)
 
 
-    fig, axs = plt.subplots(subplots[0], subplots[1], figsize=set_size(width=width, fraction=fraction, subplots=subplots, hfrac=hfrac))
+    fig, axs = plt.subplots(subplots[0], subplots[1], figsize=set_size(width=width, fraction=fraction, subplots=subplots, hfrac=hfrac, vfrac=vfrac))
     #axs.set_prop_cycle(line_cycler)
     return fig, axs
 
@@ -378,7 +382,7 @@ class DataComputer:
     base_path: str = "./eval/exp_folder"
 
     def load_file(self, file_path, file_name):
-        file_data = np.load(os.path.join(file_path, file_name))
+        file_data = np.load(os.path.join(file_path, file_name), allow_pickle=True)
         return self.comp_file(file_data)
 
     def comp_file(self, file_data):
@@ -477,6 +481,126 @@ class DataComputer:
         eval_res = EvalRes(exp_quantity=exp_quantity, mean_rmse=mean_rmse, std_rmse=std_rmse, mean_meas=mean_meas, std_meas=std_meas)
         return eval_res
 
+
+@dataclass
+class ScatterRes():
+    exp_quantity: NDArray[Shape["Batch, 1"], Float]
+    rmse: NDArray[Shape["RepXBatch, 1"], Float]
+    meas: NDArray[Shape["RepXBatch, 1"], Float]
+
+
+def scatter_rmse_over_meas(ax, scat_res: ScatterRes, exp_quant_name = "exp_quant", color=None, marker=None):
+
+    ax.scatter(scat_res.meas, scat_res.rmse, marker=marker, label=exp_quant_name, color=color, alpha=0.7)
+    ax.set_xlabel("Nr. of measurements $N_m$")
+    ax.set_ylabel('$RMSE$')
+
+@dataclass
+class ScatterComputer:
+    sort_index: int = 3
+    skip_points: int = 0
+    sub_exp_folder: str = "exp_sub_folder"
+    base_path: str = "./eval/exp_folder"
+
+    def load_file(self, file_path, file_name):
+        file_data = np.load(os.path.join(file_path, file_name))
+        return self.comp_file(file_data)
+
+    def comp_file(self, file_data):
+        return file_data
+
+    def load_run(self, run_path, run_name):
+        file_path = os.path.join(run_path, run_name)
+        file_process = "all_data_process.npy"
+        file_result = "all_data_result.npy"
+        file_stream = "all_data_stream.npy"
+        file_estimation = "estimation_data.npy"
+        file_gt = "gt_data.npy"
+
+        data_process = self.load_file(file_path, file_process)
+        data_result = self.load_file(file_path, file_result)
+        data_stream = self.load_file(file_path, file_stream)
+        data_estimation = self.load_file(file_path, file_estimation)
+        data_gt = self.load_file(file_path, file_gt)
+
+        if data_estimation.shape[1] > 1:
+            estimation = data_estimation[self.skip_points:,:1]
+            est_var = data_estimation[self.skip_points:,1:]
+        else:
+            estimation = data_estimation[self.skip_points:]
+            est_var = np.zeros_like(estimation)
+
+        run_res = RunRes(
+            run_path=run_path,
+            run_name=run_name,
+            time = data_stream[self.skip_points:,:1],
+            var = data_stream[self.skip_points:,1:],
+            query = data_result[self.skip_points:,:-1],
+            result = data_result[self.skip_points:,-1:],
+            estimation = estimation,
+            est_var = est_var,
+            gt = data_gt[self.skip_points:,-1:],
+            query_time = data_gt[self.skip_points:,:1],
+            query_var= data_gt[self.skip_points:,1:2]
+        )
+        return self.comp_run(run_res)
+    
+    def check_run_res_ok(self, run_res: RunRes):
+        return not np.any(run_res.estimation == np.nan)
+
+    def comp_run_not_ok(self, run_res: RunRes):
+        print("Corrupt Sim Data: ", run_res.run_path)
+        print("Min = ", np.min(run_res.estimation))
+        run_res.estimation[run_res.estimation < 0] = 0
+        run_res.estimation[run_res.estimation < 0] = 0
+
+    def comp_run(self, run_res: RunRes):
+        if not self.check_run_res_ok(run_res):
+            self.comp_run_not_ok(run_res)
+
+        rmse = calc_rmse(run_res)
+        nr_measurements = calc_measurements(run_res)
+        return rmse, nr_measurements
+
+
+    def load_sub_exp(self, sub_exp_path: str, sub_exp_name: str):
+        if sub_exp_name.startswith(self.sub_exp_folder):
+            exp_quantity_str = sub_exp_name.removeprefix(self.sub_exp_folder)
+            if exp_quantity_str:
+                exp_quantity = float(exp_quantity_str)
+            else:
+                exp_quantity = None
+
+            run_data = [run_result for run_result in walk_runs(path=os.path.join(sub_exp_path, sub_exp_name), worker=self.load_run)]
+
+            data = exp_quantity, run_data
+
+            return self.comp_sub_exp(data)
+
+    def comp_sub_exp(self, data):
+        exp_quantity, rmse_meas = data
+
+        rmse , meas = np.asarray(rmse_meas).T
+
+        quant_rmse_meas = (exp_quantity, rmse, meas)
+        
+        return quant_rmse_meas
+
+    def load_exp(self):
+        data = [i_r_v for i_r_v in walk_dirs(path=self.base_path, worker=self.load_sub_exp) if i_r_v is not None]
+        return self.comp_exp(data)
+
+    def comp_exp(self, loaded_data):
+        exp_quant = np.empty((0,1))
+        rmses = np.empty((0,1))
+        meass = np.empty((0,1))
+        for exp_quantity, rmse, meas in loaded_data:
+            exp_quant = np.concatenate((exp_quant, np.asarray([[exp_quantity]])))
+            rmses = np.concatenate((rmses, rmse[:, None]))
+            meass = np.concatenate((meass, meas[:, None]))
+
+        scat_res = ScatterRes(exp_quantity=exp_quant, rmse=rmses, meas=meass)
+        return scat_res
 
 @dataclass
 class MeasComputer(DataComputer):
